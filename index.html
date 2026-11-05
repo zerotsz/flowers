@@ -153,7 +153,7 @@
 </head>
 <body>
 
-  <!-- Audio de fondo -->
+  <!-- Audio de fondo (Asegúrate de poner tu morat.mp3 en la misma carpeta) -->
   <audio id="bgMusic" loop preload="auto">
     <source src="morat.mp3" type="audio/mpeg">
   </audio>
@@ -202,7 +202,7 @@
       initTulips();
     });
 
-    // Partículas de fondo
+    // Partículas de fondo estilo jardín nocturno
     const particles = [];
     for (let i = 0; i < 45; i++) {
       particles.push({
@@ -215,7 +215,7 @@
       });
     }
 
-    // Clase Tulipán
+    // Clase Tulipán grande y abierto
     class Tulip {
       constructor(xRatio, heightRatio, scale = 1, colorPrimary = '#ff4d79', colorSecondary = '#ffb3c6') {
         this.xRatio = xRatio;
@@ -376,14 +376,61 @@
 
     closeGame.addEventListener('click', closeGameModal);
 
-    // Lógica para que Orlando esquive el dedo/cursor sin salirse de pantalla
-    const escapeOrlando = (clientX, clientY) => {
+    // Lógica para que Orlando huya sin salirse de la pantalla en celulares
+    const escapeOrlando = () => {
       btnOrlando.style.position = 'fixed';
 
       const btnW = btnOrlando.offsetWidth || 110;
       const btnH = btnOrlando.offsetHeight || 42;
       const padding = 20;
 
-      // Límites visibles exactos del viewport móvil
       const minX = padding;
-      const minY = padding + 60
+      const minY = padding + 60;
+      const maxX = window.innerWidth - btnW - padding;
+      const maxY = window.innerHeight - btnH - padding;
+
+      const newX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+      const newY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+
+      btnOrlando.style.left = `${newX}px`;
+      btnOrlando.style.top = `${newY}px`;
+    };
+
+    // Detección por mouse
+    document.addEventListener('mousemove', (e) => {
+      if (!gameModal.classList.contains('active')) return;
+
+      const rect = btnOrlando.getBoundingClientRect();
+      const btnX = rect.left + rect.width / 2;
+      const btnY = rect.top + rect.height / 2;
+
+      const distance = Math.hypot(e.clientX - btnX, e.clientY - btnY);
+
+      if (distance < 100) {
+        escapeOrlando();
+      }
+    });
+
+    // Detección táctil para celulares
+    btnOrlando.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      escapeOrlando();
+    }, { passive: false });
+
+    btnOrlando.addEventListener('click', (e) => {
+      e.preventDefault();
+      escapeOrlando();
+    });
+
+    btnCarlos.addEventListener('click', () => {
+      alert("sabias que elijirias a tu macho tu machete tu galactico tu media sandia tu george pig jajaajajaj ❤️🐷");
+      closeGameModal();
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === pepaModal) pepaModal.classList.remove('active');
+      if (e.target === gameModal) closeGameModal();
+    });
+  </script>
+</body>
+</html>
