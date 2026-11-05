@@ -149,13 +149,13 @@
       color: #4a1518;
       position: absolute;
       right: 60px;
-      transition: top 0.15s ease-out, left 0.15s ease-out;
+      transition: top 0.1s ease-out, left 0.1s ease-out;
     }
   </style>
 </head>
 <body>
 
-  <!-- Audio de fondo (Sigue el paso a paso abajo para poner tu canción de Morat) -->
+  <!-- Audio de fondo (Asegúrate de tener un archivo llamado morat.mp3 en la misma carpeta) -->
   <audio id="bgMusic" loop>
     <source src="morat.mp3" type="audio/mpeg">
   </audio>
@@ -217,7 +217,7 @@
       });
     }
 
-    // Clase Tulipán con pétalos más grandes y abiertos
+    // Clase Tulipán con pétalos grandes y abiertos
     class Tulip {
       constructor(xRatio, heightRatio, scale = 1, colorPrimary = '#ff4d79', colorSecondary = '#ffb3c6') {
         this.xRatio = xRatio;
@@ -358,7 +358,6 @@
     const closeGame = document.getElementById('closeGame');
     const btnOrlando = document.getElementById('btnOrlando');
     const btnCarlos = document.getElementById('btnCarlos');
-    const choiceArea = document.getElementById('choiceArea');
 
     openGameBtn.addEventListener('click', () => {
       playMusicOnce();
@@ -366,23 +365,39 @@
     });
     closeGame.addEventListener('click', () => gameModal.classList.remove('active'));
 
-    const moveOrlandoButton = () => {
-      const containerRect = choiceArea.getBoundingClientRect();
-      const maxX = containerRect.width - btnOrlando.offsetWidth - 20;
-      const maxY = 100;
-      
-      const randomX = Math.floor(Math.random() * Math.max(maxX, 50));
-      const randomY = Math.floor(Math.random() * maxY) - 40;
+    // Lógica para que el botón de Orlando huya antes de ser tocado
+    const escapeOrlando = () => {
+      const padding = 50;
+      const randomX = Math.random() * (window.innerWidth - 180) + padding;
+      const randomY = Math.random() * (window.innerHeight - 100) + padding;
 
+      btnOrlando.style.position = 'fixed';
       btnOrlando.style.left = `${randomX}px`;
       btnOrlando.style.top = `${randomY}px`;
     };
 
-    btnOrlando.addEventListener('mouseover', moveOrlandoButton);
-    btnOrlando.addEventListener('click', moveOrlandoButton);
+    document.addEventListener('mousemove', (e) => {
+      if (!gameModal.classList.contains('active')) return;
+
+      const rect = btnOrlando.getBoundingClientRect();
+      const btnX = rect.left + rect.width / 2;
+      const btnY = rect.top + rect.height / 2;
+
+      const distance = Math.hypot(e.clientX - btnX, e.clientY - btnY);
+
+      if (distance < 120) {
+        escapeOrlando();
+      }
+    });
+
     btnOrlando.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      moveOrlandoButton();
+      escapeOrlando();
+    });
+
+    btnOrlando.addEventListener('click', (e) => {
+      e.preventDefault();
+      escapeOrlando();
     });
 
     btnCarlos.addEventListener('click', () => {
