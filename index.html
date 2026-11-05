@@ -10,6 +10,8 @@
       padding: 0;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
     }
     body, html {
       width: 100%;
@@ -45,7 +47,7 @@
       background: linear-gradient(135deg, #ff758c, #ff7eb3);
       color: #ffffff;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 13px;
       border: none;
       border-radius: 25px;
       cursor: pointer;
@@ -83,8 +85,8 @@
       border: 1px solid rgba(255, 117, 140, 0.4);
       padding: 30px 20px;
       border-radius: 20px;
-      width: 88%;
-      max-width: 420px;
+      width: 90%;
+      max-width: 400px;
       text-align: center;
       box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 25px rgba(255,117,140,0.25);
       transform: translateY(20px);
@@ -116,7 +118,7 @@
       padding: 5px;
     }
 
-    /* Estilos del minijuego de elección */
+    /* Contenedor del juego de elección */
     .choices-container {
       display: flex;
       justify-content: center;
@@ -134,8 +136,6 @@
       border: none;
       border-radius: 20px;
       cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
     #btnCarlos {
@@ -147,13 +147,13 @@
       background: linear-gradient(135deg, #ff9a9e, #fecfef);
       color: #4a1518;
       z-index: 105;
-      transition: top 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: top 0.15s cubic-bezier(0.25, 1, 0.5, 1), left 0.15s cubic-bezier(0.25, 1, 0.5, 1);
     }
   </style>
 </head>
 <body>
 
-  <!-- Audio de fondo (Asegúrate de colocar tu morat.mp3 en la misma carpeta) -->
+  <!-- Audio de fondo -->
   <audio id="bgMusic" loop preload="auto">
     <source src="morat.mp3" type="audio/mpeg">
   </audio>
@@ -164,7 +164,7 @@
     <button class="main-btn" id="openGameBtn">¿A quién eliges? 💖</button>
   </div>
 
-  <!-- Modal 1: Mensaje Pepa Pig -->
+  <!-- Modal Pepa Pig -->
   <div class="modal-overlay" id="pepaModal">
     <div class="modal-content">
       <button class="close-btn" id="closePepa">&times;</button>
@@ -174,7 +174,7 @@
     </div>
   </div>
 
-  <!-- Modal 2: Juego Interactivo ¿A quién eliges? -->
+  <!-- Modal Juego ¿A quién eliges? -->
   <div class="modal-overlay" id="gameModal">
     <div class="modal-content">
       <button class="close-btn" id="closeGame">&times;</button>
@@ -202,7 +202,7 @@
       initTulips();
     });
 
-    // Partículas de fondo estilo jardín nocturno
+    // Partículas de fondo
     const particles = [];
     for (let i = 0; i < 45; i++) {
       particles.push({
@@ -215,7 +215,7 @@
       });
     }
 
-    // Clase Tulipán grande y estilizado
+    // Clase Tulipán
     class Tulip {
       constructor(xRatio, heightRatio, scale = 1, colorPrimary = '#ff4d79', colorSecondary = '#ffb3c6') {
         this.xRatio = xRatio;
@@ -276,7 +276,7 @@
         ctx.fillStyle = this.colorPrimary;
         ctx.fill();
 
-        // Pétalo centro
+        // Pétalo central
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.bezierCurveTo(-25, -10, -32, -50, 0, -70);
@@ -376,69 +376,14 @@
 
     closeGame.addEventListener('click', closeGameModal);
 
-    // Lógica de huida ajustada para pantallas móviles
-    const escapeOrlando = () => {
+    // Lógica para que Orlando esquive el dedo/cursor sin salirse de pantalla
+    const escapeOrlando = (clientX, clientY) => {
       btnOrlando.style.position = 'fixed';
 
-      const btnW = btnOrlando.offsetWidth || 100;
-      const btnH = btnOrlando.offsetHeight || 40;
+      const btnW = btnOrlando.offsetWidth || 110;
+      const btnH = btnOrlando.offsetHeight || 42;
       const padding = 20;
 
-      // Calcular espacio límite visible en móviles
+      // Límites visibles exactos del viewport móvil
       const minX = padding;
-      const minY = padding + 50; // Evitar tapar botones superiores
-      const maxX = window.innerWidth - btnW - padding;
-      const maxY = window.innerHeight - btnH - padding;
-
-      // Obtener posición actual del botón
-      const rect = btnOrlando.getBoundingClientRect();
-      let newX, newY;
-
-      // Generar nuevas coordenadas alejadas de la posición actual
-      do {
-        newX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
-        newY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
-      } while (Math.hypot(newX - rect.left, newY - rect.top) < 150); // Mínimo 150px de salto
-
-      btnOrlando.style.left = `${newX}px`;
-      btnOrlando.style.top = `${newY}px`;
-    };
-
-    // Detección de proximidad en PC
-    document.addEventListener('mousemove', (e) => {
-      if (!gameModal.classList.contains('active')) return;
-
-      const rect = btnOrlando.getBoundingClientRect();
-      const btnX = rect.left + rect.width / 2;
-      const btnY = rect.top + rect.height / 2;
-
-      const distance = Math.hypot(e.clientX - btnX, e.clientY - btnY);
-
-      if (distance < 100) {
-        escapeOrlando();
-      }
-    });
-
-    // Detección en celulares al intentar tocar
-    btnOrlando.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      escapeOrlando();
-    }, { passive: false });
-
-    btnOrlando.addEventListener('click', (e) => {
-      e.preventDefault();
-      escapeOrlando();
-    });
-
-    btnCarlos.addEventListener('click', () => {
-      alert("sabias que elijirias a tu macho tu machete tu galactico tu media sandia tu george pig jajaajajaj ❤️🐷");
-      closeGameModal();
-    });
-
-    window.addEventListener('click', (e) => {
-      if (e.target === pepaModal) pepaModal.classList.remove('active');
-      if (e.target === gameModal) closeGameModal();
-    });
-  </script>
-</body>
-</html>
+      const minY = padding + 60
