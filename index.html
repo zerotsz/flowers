@@ -2,13 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Tulipanes y Sorpresa</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
     body, html {
       width: 100%;
@@ -30,28 +31,29 @@
     /* Botones de la esquina superior */
     .top-buttons {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 15px;
+      right: 15px;
+      left: 15px;
       display: flex;
-      gap: 12px;
+      justify-content: flex-end;
+      gap: 10px;
       z-index: 10;
     }
 
     .main-btn {
-      padding: 12px 20px;
+      padding: 10px 16px;
       background: linear-gradient(135deg, #ff758c, #ff7eb3);
       color: #ffffff;
       font-weight: bold;
-      font-size: 15px;
+      font-size: 14px;
       border: none;
       border-radius: 25px;
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
-      transition: all 0.3s ease;
+      transition: transform 0.2s ease;
     }
-    .main-btn:hover {
-      transform: scale(1.08);
-      box-shadow: 0 6px 20px rgba(255, 117, 140, 0.6);
+    .main-btn:active {
+      transform: scale(0.95);
     }
 
     /* Overlay / Modales */
@@ -61,14 +63,14 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(8px);
       display: flex;
       justify-content: center;
       align-items: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.3s ease;
       z-index: 100;
     }
     .modal-overlay.active {
@@ -77,16 +79,16 @@
     }
 
     .modal-content {
-      background: rgba(20, 25, 35, 0.92);
+      background: rgba(20, 25, 35, 0.95);
       border: 1px solid rgba(255, 117, 140, 0.4);
-      padding: 35px 30px;
+      padding: 30px 20px;
       border-radius: 20px;
-      max-width: 480px;
-      width: 90%;
+      width: 88%;
+      max-width: 420px;
       text-align: center;
       box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 25px rgba(255,117,140,0.25);
       transform: translateY(20px);
-      transition: transform 0.4s ease;
+      transition: transform 0.3s ease;
       position: relative;
       color: #ffffff;
     }
@@ -95,67 +97,64 @@
     }
 
     .modal-title {
-      font-size: 21px;
+      font-size: 19px;
       color: #ffb3c6;
       margin-bottom: 20px;
-      line-height: 1.5;
+      line-height: 1.4;
       font-weight: bold;
     }
 
     .close-btn {
       position: absolute;
-      top: 12px;
-      right: 16px;
+      top: 10px;
+      right: 14px;
       background: none;
       border: none;
       color: #8a99ad;
-      font-size: 22px;
+      font-size: 24px;
       cursor: pointer;
-    }
-    .close-btn:hover {
-      color: #ffffff;
+      padding: 5px;
     }
 
     /* Estilos del minijuego de elección */
     .choices-container {
       display: flex;
       justify-content: center;
-      gap: 20px;
-      margin-top: 25px;
+      align-items: center;
+      gap: 15px;
+      margin-top: 20px;
       position: relative;
-      height: 70px;
+      min-height: 60px;
     }
 
     .choice-btn {
-      padding: 12px 28px;
-      font-size: 16px;
+      padding: 12px 24px;
+      font-size: 15px;
       font-weight: bold;
       border: none;
       border-radius: 20px;
       cursor: pointer;
-      transition: background 0.2s;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     #btnCarlos {
       background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
       color: #0d233a;
     }
-    #btnCarlos:hover {
-      background: linear-gradient(135deg, #8ab5fc, #a5defb);
-    }
 
     #btnOrlando {
       background: linear-gradient(135deg, #ff9a9e, #fecfef);
       color: #4a1518;
       z-index: 105;
-      transition: top 0.12s ease-out, left 0.12s ease-out;
+      transition: top 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
   </style>
 </head>
 <body>
 
-  <!-- Audio de fondo (Asegúrate de tener un archivo llamado morat.mp3 en la misma carpeta) -->
-  <audio id="bgMusic" loop>
+  <!-- Audio de fondo (Asegúrate de colocar tu morat.mp3 en la misma carpeta) -->
+  <audio id="bgMusic" loop preload="auto">
     <source src="morat.mp3" type="audio/mpeg">
   </audio>
 
@@ -177,7 +176,7 @@
 
   <!-- Modal 2: Juego Interactivo ¿A quién eliges? -->
   <div class="modal-overlay" id="gameModal">
-    <div class="modal-content" id="gameBox" style="min-height: 230px;">
+    <div class="modal-content">
       <button class="close-btn" id="closeGame">&times;</button>
       <div class="modal-title">¿A quién eliges? 🤔</div>
       <div class="choices-container" id="choiceArea">
@@ -203,9 +202,9 @@
       initTulips();
     });
 
-    // Partículas de fondo estilo jardín nocturno mágico
+    // Partículas de fondo estilo jardín nocturno
     const particles = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 45; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -216,7 +215,7 @@
       });
     }
 
-    // Clase Tulipán con pétalos grandes y abiertos
+    // Clase Tulipán grande y estilizado
     class Tulip {
       constructor(xRatio, heightRatio, scale = 1, colorPrimary = '#ff4d79', colorSecondary = '#ffb3c6') {
         this.xRatio = xRatio;
@@ -255,13 +254,13 @@
         ctx.lineWidth = 2.5 * this.scale;
         ctx.stroke();
 
-        // Capullo de Tulipán Grande y Abierto
+        // Capullo Abierto
         ctx.save();
         ctx.translate(endX, endY);
         ctx.rotate(wind * 0.6);
         ctx.scale(this.scale, this.scale);
 
-        // Pétalo izquierdo abierto
+        // Pétalo izquierdo
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.bezierCurveTo(-25, -15, -45, -35, -30, -60);
@@ -269,7 +268,7 @@
         ctx.fillStyle = this.colorSecondary;
         ctx.fill();
 
-        // Pétalo derecho abierto
+        // Pétalo derecho
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.bezierCurveTo(25, -15, 45, -35, 30, -60);
@@ -277,7 +276,7 @@
         ctx.fillStyle = this.colorPrimary;
         ctx.fill();
 
-        // Pétalo central principal
+        // Pétalo centro
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.bezierCurveTo(-25, -10, -32, -50, 0, -70);
@@ -299,13 +298,13 @@
     let tulips = [];
     function initTulips() {
       tulips = [
-        new Tulip(0.12, 0.40, 0.8, '#ff3366', '#ff99bb'),
-        new Tulip(0.25, 0.52, 0.95, '#ff1a75', '#ff80bf'),
-        new Tulip(0.38, 0.62, 1.1, '#ff4d94', '#ffb3d9'),
-        new Tulip(0.50, 0.48, 0.9, '#ff66b2', '#ff99cc'),
-        new Tulip(0.62, 0.65, 1.15, '#ff1a40', '#ff8099'),
-        new Tulip(0.75, 0.50, 1.0, '#ff3366', '#ff99bb'),
-        new Tulip(0.88, 0.42, 0.85, '#ff4d94', '#ffb3d9')
+        new Tulip(0.12, 0.38, 0.8, '#ff3366', '#ff99bb'),
+        new Tulip(0.25, 0.48, 0.95, '#ff1a75', '#ff80bf'),
+        new Tulip(0.38, 0.58, 1.1, '#ff4d94', '#ffb3d9'),
+        new Tulip(0.50, 0.45, 0.9, '#ff66b2', '#ff99cc'),
+        new Tulip(0.62, 0.60, 1.15, '#ff1a40', '#ff8099'),
+        new Tulip(0.75, 0.46, 1.0, '#ff3366', '#ff99bb'),
+        new Tulip(0.88, 0.38, 0.85, '#ff4d94', '#ffb3d9')
       ];
     }
     initTulips();
@@ -358,9 +357,10 @@
     const btnOrlando = document.getElementById('btnOrlando');
     const btnCarlos = document.getElementById('btnCarlos');
 
-    // Resetear posición de Orlando al abrir/cerrar
     function resetOrlandoPosition() {
       btnOrlando.style.position = 'static';
+      btnOrlando.style.left = 'auto';
+      btnOrlando.style.top = 'auto';
     }
 
     openGameBtn.addEventListener('click', () => {
@@ -376,24 +376,35 @@
 
     closeGame.addEventListener('click', closeGameModal);
 
-    // Lógica para que el botón de Orlando huya dentro de los bordes visibles
+    // Lógica de huida ajustada para pantallas móviles
     const escapeOrlando = () => {
       btnOrlando.style.position = 'fixed';
-      
-      const btnWidth = btnOrlando.offsetWidth || 120;
-      const btnHeight = btnOrlando.offsetHeight || 45;
-      const margin = 20;
 
-      const maxX = window.innerWidth - btnWidth - margin;
-      const maxY = window.innerHeight - btnHeight - margin;
+      const btnW = btnOrlando.offsetWidth || 100;
+      const btnH = btnOrlando.offsetHeight || 40;
+      const padding = 20;
 
-      const randomX = Math.max(margin, Math.floor(Math.random() * maxX));
-      const randomY = Math.max(margin, Math.floor(Math.random() * maxY));
+      // Calcular espacio límite visible en móviles
+      const minX = padding;
+      const minY = padding + 50; // Evitar tapar botones superiores
+      const maxX = window.innerWidth - btnW - padding;
+      const maxY = window.innerHeight - btnH - padding;
 
-      btnOrlando.style.left = `${randomX}px`;
-      btnOrlando.style.top = `${randomY}px`;
+      // Obtener posición actual del botón
+      const rect = btnOrlando.getBoundingClientRect();
+      let newX, newY;
+
+      // Generar nuevas coordenadas alejadas de la posición actual
+      do {
+        newX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+        newY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+      } while (Math.hypot(newX - rect.left, newY - rect.top) < 150); // Mínimo 150px de salto
+
+      btnOrlando.style.left = `${newX}px`;
+      btnOrlando.style.top = `${newY}px`;
     };
 
+    // Detección de proximidad en PC
     document.addEventListener('mousemove', (e) => {
       if (!gameModal.classList.contains('active')) return;
 
@@ -403,15 +414,16 @@
 
       const distance = Math.hypot(e.clientX - btnX, e.clientY - btnY);
 
-      if (distance < 110) {
+      if (distance < 100) {
         escapeOrlando();
       }
     });
 
+    // Detección en celulares al intentar tocar
     btnOrlando.addEventListener('touchstart', (e) => {
       e.preventDefault();
       escapeOrlando();
-    });
+    }, { passive: false });
 
     btnOrlando.addEventListener('click', (e) => {
       e.preventDefault();
